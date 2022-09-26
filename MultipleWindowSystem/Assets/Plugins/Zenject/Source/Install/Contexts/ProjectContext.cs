@@ -34,7 +34,7 @@ namespace Zenject
         ReflectionBakingCoverageModes _buildsReflectionBakingCoverageMode = ReflectionBakingCoverageModes.FallbackToDirectReflection;
 
         [SerializeField]
-        ZenjectSettings _settings = null;
+        ZenjectSettings _settings = ZenjectSettings.Default;
 
         DiContainer _container;
 
@@ -202,6 +202,9 @@ namespace Zenject
 
         void Initialize()
         {
+            // Do this as early as possible before any type analysis occurs
+            ReflectionTypeAnalyzer.ConstructorChoiceStrategy = _settings.ConstructorChoiceStrategy;
+
             Assert.IsNull(_container);
 
             if (Application.isEditor)
@@ -281,7 +284,7 @@ namespace Zenject
                 _container.DefaultParent = null;
             }
 
-            _container.Settings = _settings ?? ZenjectSettings.Default;
+            _container.Settings = _settings;
 
             _container.Bind<ZenjectSceneLoader>().AsSingle();
 
